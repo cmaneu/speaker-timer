@@ -55,15 +55,15 @@ function formatTime(totalSec) {
 }
 
 /**
- * Update background colour based on overtime:
- *   overtime ≥  5 min (remainingSec ≤ −300)  → dark orange
- *   overtime ≥ 10 min (remainingSec ≤ −600)  → red
+ * Update background colour based on remaining time:
+ *   ≤ 10 min remaining (remainingSec ≤ 600)  → dark orange  (warning)
+ *   ≤  5 min remaining (remainingSec ≤ 300)  → red          (danger)
  */
 function applyBackground(remainingSec) {
   timerScreen.classList.remove('warning', 'danger');
-  if (remainingSec <= -600) {
+  if (remainingSec <= 300) {
     timerScreen.classList.add('danger');
-  } else if (remainingSec <= -300) {
+  } else if (remainingSec <= 600) {
     timerScreen.classList.add('warning');
   }
 }
