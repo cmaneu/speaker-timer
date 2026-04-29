@@ -1,13 +1,18 @@
 'use strict';
 
 // ── DOM references ──────────────────────────────────────────────
-const setupScreen   = document.getElementById('setup-screen');
-const timerScreen   = document.getElementById('timer-screen');
-const durationInput = document.getElementById('duration');
-const startBtn      = document.getElementById('start-btn');
-const stopBtn       = document.getElementById('stop-btn');
-const timeDisplay   = document.getElementById('time-display');
-const progressBar   = document.getElementById('progress-bar');
+const setupScreen    = document.getElementById('setup-screen');
+const timerScreen    = document.getElementById('timer-screen');
+const waitingScreen  = document.getElementById('waiting-screen');
+const durationInput  = document.getElementById('duration');
+const startBtn       = document.getElementById('start-btn');
+const stopBtn        = document.getElementById('stop-btn');
+const waitingStopBtn = document.getElementById('waiting-stop-btn');
+const timeDisplay    = document.getElementById('time-display');
+const progressBar    = document.getElementById('progress-bar');
+const startAtToggle  = document.getElementById('start-at-toggle');
+const startAtTime    = document.getElementById('start-at-time');
+const waitingDisplay = document.getElementById('waiting-display');
 
 // ── State ───────────────────────────────────────────────────────
 let totalSeconds  = 0;   // configured talk duration in seconds
@@ -17,6 +22,7 @@ let lastTimestamp = null;
 let wakeLock      = null;
 let vibratedWarning = false;  // true once we vibrate at ≤ 10 min
 let vibratedDanger  = false;  // true once we vibrate at ≤  5 min
+let waitingIntervalId = null; // interval for the waiting countdown
 
 // ── Wake Lock ───────────────────────────────────────────────────
 async function acquireWakeLock() {
@@ -122,6 +128,19 @@ function startTimer() {
   const minutes = parseInt(durationInput.value, 10);
   if (!Number.isFinite(minutes) || minutes < 1) return;
 
+  // If "start at time" is active, enter waiting stage instead
+  if (startAtToggle.checked) {
+    const timeVal = startAtTime.value;
+    if (!timeVal) return;           // no time entered
+    startWaiting(minutes, timeVal);
+    return;
+  }
+
+  beginCountdown(minutes);
+}
+
+/** Actually start the talk countdown (called directly or after waiting). */
+function beginCountdown(minutes) {
   totalSeconds  = minutes * 60;
   remainingMs   = totalSeconds * 1000;
   lastTimestamp = null;
@@ -130,6 +149,7 @@ function startTimer() {
 
   timerScreen.classList.remove('warning', 'danger');
   setupScreen.classList.add('hidden');
+  waitingScreen.classList.add('hidden');
   timerScreen.classList.remove('hidden');
 
   progressBar.style.width = '100%';
@@ -138,6 +158,54 @@ function startTimer() {
 
   rafId = requestAnimationFrame(tick);
   acquireWakeLock();
+}
+
+// ── Waiting stage ────────────────────────────────────────────────
+
+/**
+ * Enter the waiting stage: show a "Start in" countdown until the
+ * specified wall-clock time, then auto-start the timer.
+ */
+function startWaiting(minutes, timeVal) {
+  const [h, m] = timeVal.split(':').map(Number);
+  const now    = new Date();
+  const target = new Date(now);
+  target.setHours(h, m, 0, 0);
+
+  // If the target time is already past today, treat it as tomorrow
+  if (target <= now) {
+    target.setDate(target.getDate() + 1);
+  }
+
+  setupScreen.classList.add('hidden');
+  waitingScreen.classList.remove('hidden');
+
+  acquireWakeLock();
+
+  function updateWaiting() {
+    const diffMs  = target.getTime() - Date.now();
+    if (diffMs <= 0) {
+      clearInterval(waitingIntervalId);
+      waitingIntervalId = null;
+      beginCountdown(minutes);
+      return;
+    }
+    const totalSec = Math.ceil(diffMs / 1000);
+    waitingDisplay.textContent = formatTime(totalSec);
+  }
+
+  updateWaiting();                           // show immediately
+  waitingIntervalId = setInterval(updateWaiting, 1000); // update once/s
+}
+
+function stopWaiting() {
+  if (waitingIntervalId !== null) {
+    clearInterval(waitingIntervalId);
+    waitingIntervalId = null;
+  }
+  releaseWakeLock();
+  waitingScreen.classList.add('hidden');
+  setupScreen.classList.remove('hidden');
 }
 
 function stopTimer() {
@@ -157,7 +225,16 @@ function stopTimer() {
 // ── Event listeners ──────────────────────────────────────────────
 startBtn.addEventListener('click', startTimer);
 stopBtn.addEventListener('click', stopTimer);
+waitingStopBtn.addEventListener('click', stopWaiting);
+
+startAtToggle.addEventListener('change', () => {
+  startAtTime.classList.toggle('hidden', !startAtToggle.checked);
+});
 
 durationInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') startTimer();
+});
+
+startAtTime.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') startTimer();
 });

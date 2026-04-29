@@ -26,8 +26,27 @@
         max="480"
         aria-label="Talk duration in minutes"
       />
+      <div class="start-at-option">
+        <label class="toggle-label">
+          <input type="checkbox" id="start-at-toggle" />
+          Start at a specific time
+        </label>
+        <input
+          type="time"
+          id="start-at-time"
+          class="hidden"
+          aria-label="Start time"
+        />
+      </div>
       <button id="start-btn">Start</button>
     </div>
+  </div>
+
+  <!-- ── Waiting screen ────────────────────────────────────────── -->
+  <div id="waiting-screen" class="hidden">
+    <div id="waiting-label">Start in</div>
+    <div id="waiting-display" aria-label="Time until start">00:00</div>
+    <button id="waiting-stop-btn" aria-label="Cancel waiting">&#x2715;</button>
   </div>
 
   <!-- ── Timer screen ──────────────────────────────────────────── -->

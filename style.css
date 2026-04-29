@@ -72,6 +72,53 @@ html, body {
   border-color: #888;
 }
 
+/* Start-at-time option */
+.start-at-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #888;
+  cursor: pointer;
+}
+
+.toggle-label input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: #888;
+  cursor: pointer;
+}
+
+.start-at-option input[type="time"] {
+  width: 10rem;
+  padding: 0.5rem 1rem;
+  background: #111;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #e0e0e0;
+  font-family: inherit;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.start-at-option input[type="time"]:focus {
+  outline: none;
+  border-color: #888;
+}
+
+.start-at-option .hidden {
+  display: none;
+}
+
 .setup-form button {
   margin-top: 0.5rem;
   padding: 0.7rem 3rem;
@@ -90,6 +137,67 @@ html, body {
 .setup-form button:hover {
   background: #333;
   border-color: #aaa;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Waiting screen
+   ────────────────────────────────────────────────────────────── */
+#waiting-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+#waiting-screen.hidden {
+  display: none;
+}
+
+#waiting-label {
+  font-size: clamp(1.5rem, 5vw, 3rem);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+#waiting-display {
+  font-size: clamp(5rem, 22vw, 22rem);
+  letter-spacing: 0.06em;
+  color: #fff;
+  user-select: none;
+  text-align: center;
+  white-space: nowrap;
+}
+
+#waiting-stop-btn {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.5rem;
+  z-index: 2;
+  background: transparent;
+  border: 1px solid #444;
+  border-radius: 50%;
+  width: 2.8rem;
+  height: 2.8rem;
+  color: #555;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, border-color 0.2s;
+  opacity: 0.4;
+}
+
+#waiting-stop-btn:hover {
+  color: #ccc;
+  border-color: #aaa;
+  opacity: 1;
 }
 
 /* ──────────────────────────────────────────────────────────────
