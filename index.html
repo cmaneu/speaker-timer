@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Speaker Timer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Setup screen ─────────────────────────────────────────── -->
+  <div id="setup-screen">
+    <h1>Speaker Timer</h1>
+    <div class="setup-form">
+      <label for="duration">Talk duration (minutes)</label>
+      <input
+        type="number"
+        id="duration"
+        value="45"
+        min="1"
+        max="480"
+        aria-label="Talk duration in minutes"
+      />
+      <button id="start-btn">Start</button>
+    </div>
+  </div>
+
+  <!-- ── Timer screen ──────────────────────────────────────────── -->
+  <div id="timer-screen" class="hidden" aria-live="off">
+    <!-- Full-screen progress bar (behind everything else) -->
+    <div id="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"></div>
+
+    <!-- Digital time display -->
+    <div id="time-display" aria-label="Remaining time">00:00</div>
+
+    <!-- Minimal stop / reset button -->
+    <button id="stop-btn" aria-label="Stop and reset timer">&#x2715;</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+/* ──────────────────────────────────────────────────────────────
+   Base reset & full-viewport layout
+   ────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  color: #e0e0e0;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  overflow: hidden;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Setup screen
+   ────────────────────────────────────────────────────────────── */
+#setup-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 2rem;
+}
+
+#setup-screen h1 {
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #ccc;
+}
+
+.setup-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.setup-form label {
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #888;
+}
+
+.setup-form input[type="number"] {
+  width: 10rem;
+  padding: 0.6rem 1rem;
+  background: #111;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #e0e0e0;
+  font-family: inherit;
+  font-size: 2rem;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.setup-form input[type="number"]::-webkit-inner-spin-button,
+.setup-form input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+.setup-form input[type="number"]:focus {
+  outline: none;
+  border-color: #888;
+}
+
+.setup-form button {
+  margin-top: 0.5rem;
+  padding: 0.7rem 3rem;
+  background: #222;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #e0e0e0;
+  font-family: inherit;
+  font-size: 1.1rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.setup-form button:hover {
+  background: #333;
+  border-color: #aaa;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Timer screen
+   ────────────────────────────────────────────────────────────── */
+#timer-screen {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  /* background color is animated via JS classes */
+  background: #000;
+  transition: background 0.8s ease;
+}
+
+#timer-screen.hidden {
+  display: none;
+}
+
+#setup-screen.hidden {
+  display: none;
+}
+
+/* Full-screen progress bar — sits behind the time text */
+#progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;           /* set dynamically by JS */
+  background: rgba(255, 255, 255, 0.07);
+  transform-origin: left center;
+  transition: width 1s linear, background 0.8s ease;
+  pointer-events: none;
+}
+
+/* Digital time display */
+#time-display {
+  position: relative;   /* above the progress bar */
+  z-index: 1;
+  font-size: clamp(5rem, 22vw, 22rem);
+  letter-spacing: 0.06em;
+  color: #e8e8e8;
+  text-shadow:
+    0 0 10px rgba(255,255,255,0.25),
+    0 0 40px rgba(255,255,255,0.10);
+  user-select: none;
+  /* negative sign can make the string wider; keep it centred */
+  text-align: center;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+/* Stop / reset button — unobtrusive, top-right corner */
+#stop-btn {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.5rem;
+  z-index: 2;
+  background: transparent;
+  border: 1px solid #444;
+  border-radius: 50%;
+  width: 2.8rem;
+  height: 2.8rem;
+  color: #555;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, border-color 0.2s;
+  opacity: 0.4;
+}
+
+#stop-btn:hover {
+  color: #ccc;
+  border-color: #aaa;
+  opacity: 1;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Timer background states (applied by JS)
+   ────────────────────────────────────────────────────────────── */
+
+/* -10 min: dark orange */
+#timer-screen.warning {
+  background: #7a3200;
+}
+
+#timer-screen.warning #progress-bar {
+  background: rgba(255, 140, 0, 0.12);
+}
+
+/* -5 min: red */
+#timer-screen.danger {
+  background: #7a0000;
+}
+
+#timer-screen.danger #progress-bar {
+  background: rgba(255, 0, 0, 0.12);
+}
