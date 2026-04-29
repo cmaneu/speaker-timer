@@ -119,7 +119,7 @@ html, body {
 #progress-bar {
   position: absolute;
   top: 0;
-  left: 0;
+  right: 0;
   height: 100%;
   width: 100%;           /* set dynamically by JS */
   background: rgba(255, 255, 255, 0.07);
