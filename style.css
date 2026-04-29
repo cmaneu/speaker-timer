@@ -176,7 +176,7 @@ html, body {
    Timer background states (applied by JS)
    ────────────────────────────────────────────────────────────── */
 
-/* -10 min: dark orange */
+/* ≤ 10 min remaining: dark orange */
 #timer-screen.warning {
   background: #7a3200;
 }
@@ -185,7 +185,7 @@ html, body {
   background: rgba(255, 140, 0, 0.12);
 }
 
-/* -5 min: red */
+/* ≤ 5 min remaining: red */
 #timer-screen.danger {
   background: #7a0000;
 }
