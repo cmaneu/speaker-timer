@@ -15,6 +15,8 @@ let remainingMs   = 0;   // milliseconds left (goes negative = overtime)
 let rafId         = null;
 let lastTimestamp = null;
 let wakeLock      = null;
+let vibratedWarning = false;  // true once we vibrate at ≤ 10 min
+let vibratedDanger  = false;  // true once we vibrate at ≤  5 min
 
 // ── Wake Lock ───────────────────────────────────────────────────
 async function acquireWakeLock() {
@@ -69,6 +71,26 @@ function applyBackground(remainingSec) {
 }
 
 /**
+ * Vibrate the device at key thresholds (once per threshold).
+ *   ≤ 10 min remaining → "two tone"  vibration
+ *   ≤  5 min remaining → "four tone" vibration
+ * Uses the Web Vibration API; silently ignored on unsupported devices.
+ */
+function checkVibration(remainingSec) {
+  if (!navigator.vibrate) return;
+
+  if (remainingSec <= 300 && !vibratedDanger) {
+    vibratedDanger = true;
+    // Four-tone pattern: vibrate, pause, vibrate, pause, vibrate, pause, vibrate
+    navigator.vibrate([200, 100, 200, 100, 200, 100, 200]);
+  } else if (remainingSec <= 600 && !vibratedWarning) {
+    vibratedWarning = true;
+    // Two-tone pattern: vibrate, pause, vibrate
+    navigator.vibrate([200, 100, 200]);
+  }
+}
+
+/**
  * Update the grey progress bar width.
  * 100% = full time remaining, 0% = time expired (clamped, not negative).
  */
@@ -90,6 +112,7 @@ function tick(timestamp) {
   timeDisplay.textContent = formatTime(remainingSec);
   updateProgressBar(remainingSec);
   applyBackground(remainingSec);
+  checkVibration(remainingSec);
 
   rafId = requestAnimationFrame(tick);
 }
@@ -102,6 +125,8 @@ function startTimer() {
   totalSeconds  = minutes * 60;
   remainingMs   = totalSeconds * 1000;
   lastTimestamp = null;
+  vibratedWarning = false;
+  vibratedDanger  = false;
 
   timerScreen.classList.remove('warning', 'danger');
   setupScreen.classList.add('hidden');
